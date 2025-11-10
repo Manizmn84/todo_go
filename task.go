@@ -21,7 +21,7 @@ type MyTask struct {
 	description string
 }
 
-func NewTask(action func(), alarm time.Time, name, desc string) (*MyTask, error) {
+func NewTask(action func(), alarm time.Time, name, desc string) (Task, error) {
 	if action == nil {
 		return nil, errors.New("action can not be nil")
 	}

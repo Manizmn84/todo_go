@@ -14,46 +14,46 @@ type Database interface {
 
 type MemoryDatabase struct {
 	mu    sync.RWMutex
-	tasks map[string]MyTask
+	tasks map[string]Task
 }
 
 func NewDatabase() *MemoryDatabase {
 	return &MemoryDatabase{
-		tasks: make(map[string]MyTask),
+		tasks: make(map[string]Task),
 	}
 }
 
-func (db *MemoryDatabase) GetTaskList() []MyTask {
+func (db *MemoryDatabase) GetTaskList() []Task {
 	db.mu.RLock()
 	defer db.mu.RUnlock()
 
-	list := make([]MyTask, 0, len(db.tasks))
+	list := make([]Task, 0, len(db.tasks))
 	for _, t := range db.tasks {
 		list = append(list, t)
 	}
 	return list
 }
 
-func (db *MemoryDatabase) GetTask(name string) (MyTask, error) {
+func (db *MemoryDatabase) GetTask(name string) (Task, error) {
 	db.mu.RLock()
 	defer db.mu.RUnlock()
 
 	task, exists := db.tasks[name]
 	if !exists {
-		return MyTask{}, errors.New("task not found")
+		return nil, errors.New("task not found")
 	}
 	return task, nil
 }
 
-func (db *MemoryDatabase) SaveTask(task MyTask) error {
-	if task.name == "" {
+func (db *MemoryDatabase) SaveTask(task Task) error {
+	if task.GetName() == "" {
 		return errors.New("task name cannot be empty")
 	}
 
 	db.mu.Lock()
 	defer db.mu.Unlock()
 
-	db.tasks[task.name] = task
+	db.tasks[task.GetName()] = task
 	return nil
 }
 
